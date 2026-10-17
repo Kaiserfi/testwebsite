@@ -22,10 +22,11 @@
             border-radius: 8px;
             text-align: center;
             border: 2px solid #5a0000;
-            box-shadow: 0 8px 20px rgba(139, 0, 0, 0.4), 
+            box-shadow: 0 8px 20px rgba(139, 0, 0, 0.4),
                         inset 0 0 15px rgba(255, 51, 51, 0.05);
             max-width: 800px;
             width: 100%;
+            box-sizing: border-box;
         }
 
         h1 {
@@ -43,13 +44,32 @@
 
         p {
             color: #b3b3b3;
-            margin-bottom: 30px;
+            margin-bottom: 10px;
+        }
+
+        .meta {
+            font-size: 0.85rem;
+            color: #777;
+            margin-bottom: 25px;
         }
 
         #loading {
             color: #ff1a1a;
             font-style: italic;
         }
+
+        button {
+            background: #2a0a0a;
+            color: #e0e0e0;
+            border: 1px solid #8b0000;
+            border-radius: 4px;
+            padding: 6px 14px;
+            margin-left: 8px;
+            cursor: pointer;
+            font: inherit;
+        }
+        button:hover { border-color: #ff3333; }
+        button:disabled { opacity: 0.5; cursor: default; }
 
         .stats-grid {
             display: grid;
@@ -86,7 +106,6 @@
             text-shadow: 0 0 10px rgba(255, 51, 51, 0.3);
         }
 
-        /* New CSS for the Experience text */
         .skill-xp {
             font-size: 0.75rem;
             color: #999;
@@ -105,69 +124,113 @@
     <div class="content-box">
         <h1>IKaiserfi</h1>
         <p>Live Server Highscores</p>
-        
+        <div class="meta">
+            <span id="meta-text"></span>
+            <button id="refresh-btn" type="button">Update from hiscores</button>
+        </div>
+
         <div id="loading">Fetching data from Gielinor...</div>
         <div class="stats-grid" id="stats-container"></div>
     </div>
 
     <script>
         const username = 'IKaiserfi';
-        const osrsUrl = `https://secure.runescape.com/m=hiscore_oldschool/index_lite.ws?player=${username}`;
-        
-        // Use the /get endpoint to wrap the response in JSON, bypassing most Cloudflare blocks
-        const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(osrsUrl)}`;
+        const apiUrl = `https://api.wiseoldman.net/v2/players/${encodeURIComponent(username)}`;
 
-        const skillsOrder = [
-            "Overall", "Attack", "Defence", "Strength", "Hitpoints", "Ranged", 
-            "Prayer", "Magic", "Cooking", "Woodcutting", "Fletching", "Fishing", 
-            "Firemaking", "Crafting", "Smithing", "Mining", "Herblore", "Agility", 
-            "Thieving", "Slayer", "Farming", "Runecraft", "Hunter", "Construction"
+        // Display order and labels (keys match Wise Old Man's API)
+        const skills = [
+            ["overall", "Overall"], ["attack", "Attack"], ["defence", "Defence"],
+            ["strength", "Strength"], ["hitpoints", "Hitpoints"], ["ranged", "Ranged"],
+            ["prayer", "Prayer"], ["magic", "Magic"], ["cooking", "Cooking"],
+            ["woodcutting", "Woodcutting"], ["fletching", "Fletching"], ["fishing", "Fishing"],
+            ["firemaking", "Firemaking"], ["crafting", "Crafting"], ["smithing", "Smithing"],
+            ["mining", "Mining"], ["herblore", "Herblore"], ["agility", "Agility"],
+            ["thieving", "Thieving"], ["slayer", "Slayer"], ["farming", "Farming"],
+            ["runecrafting", "Runecraft"], ["hunter", "Hunter"], ["construction", "Construction"],
+            ["sailing", "Sailing"]
         ];
+        const highlighted = new Set(["herblore", "smithing"]);
 
-        fetch(proxyUrl)
-            .then(response => {
-                if (!response.ok) throw new Error('Proxy connection failed');
-                return response.json(); // Parse as JSON instead of raw text
-            })
-            .then(data => {
-                // If Jagex returns a 404 inside the proxy, the player isn't on the hiscores
-                if (data.status && data.status.http_code === 404) {
-                    throw new Error('Player not found');
-                }
+        const loadingEl = document.getElementById('loading');
+        const container = document.getElementById('stats-container');
+        const metaText = document.getElementById('meta-text');
+        const refreshBtn = document.getElementById('refresh-btn');
 
-                document.getElementById('loading').style.display = 'none';
-                const container = document.getElementById('stats-container');
-                
-                // The actual OSRS text is now safely stored inside data.contents
-                const lines = data.contents.split('\n');
+        function render(player) {
+            const data = player.latestSnapshot && player.latestSnapshot.data;
+            if (!data) throw new Error('No stats on record yet');
 
-                for (let i = 0; i < skillsOrder.length; i++) {
-                    const skillData = lines[i].split(',');
-                    
-                    const level = skillData[1];
-                    const xpRaw = parseInt(skillData[2]);
-                    const xpDisplay = xpRaw >= 0 ? xpRaw.toLocaleString() + ' XP' : 'Unranked';
-                    
-                    const card = document.createElement('div');
-                    card.className = 'stat-card';
-                    
-                    if (skillsOrder[i] === 'Herblore' || skillsOrder[i] === 'Smithing') {
-                        card.classList.add('highlight');
+            container.innerHTML = '';
+            for (const [key, label] of skills) {
+                const s = data.skills[key];
+                if (!s) continue;
+
+                const card = document.createElement('div');
+                card.className = 'stat-card' + (highlighted.has(key) ? ' highlight' : '');
+
+                const xp = s.experience >= 0 ? s.experience.toLocaleString() + ' XP' : 'Unranked';
+                const level = s.level > 0 ? s.level : '–';
+
+                card.innerHTML = `
+                    <div class="skill-name">${label}</div>
+                    <div class="skill-level">${level}</div>
+                    <div class="skill-xp">${xp}</div>
+                `;
+                container.appendChild(card);
+            }
+
+            const updated = new Date(player.updatedAt).toLocaleString();
+            metaText.textContent = `Combat ${player.combatLevel} · Last updated ${updated}`;
+            loadingEl.style.display = 'none';
+        }
+
+        function showError(msg) {
+            loadingEl.style.display = 'block';
+            loadingEl.innerText = msg;
+        }
+
+        // GET: read the latest stored stats (fast, no rate-limit worries)
+        function loadStats() {
+            return fetch(apiUrl)
+                .then(r => {
+                    if (r.status === 404) throw new Error('not-tracked');
+                    if (!r.ok) throw new Error('HTTP ' + r.status);
+                    return r.json();
+                })
+                .then(render)
+                .catch(err => {
+                    if (err.message === 'not-tracked') {
+                        // First visit: ask Wise Old Man to start tracking this player
+                        return updateStats();
                     }
+                    console.error(err);
+                    showError('Error: could not load stats right now. Try again in a minute.');
+                });
+        }
 
-                    card.innerHTML = `
-                        <div class="skill-name">${skillsOrder[i]}</div>
-                        <div class="skill-level">${level}</div>
-                        <div class="skill-xp">${xpDisplay}</div>
-                    `;
-                    
-                    container.appendChild(card);
-                }
-            })
-            .catch(error => {
-                document.getElementById('loading').innerText = 'Error: Jagex servers are currently blocking the request.';
-                console.error(error);
-            });
+        // POST: tell Wise Old Man to pull fresh numbers from the official hiscores
+        function updateStats() {
+            refreshBtn.disabled = true;
+            refreshBtn.textContent = 'Updating...';
+            return fetch(apiUrl, { method: 'POST' })
+                .then(r => {
+                    if (r.status === 429) throw new Error('Updated too recently, wait a minute and try again.');
+                    if (!r.ok) throw new Error('Update failed (HTTP ' + r.status + ').');
+                    return r.json();
+                })
+                .then(render)
+                .catch(err => {
+                    console.error(err);
+                    metaText.textContent = err.message;
+                })
+                .finally(() => {
+                    refreshBtn.disabled = false;
+                    refreshBtn.textContent = 'Update from hiscores';
+                });
+        }
+
+        refreshBtn.addEventListener('click', updateStats);
+        loadStats();
     </script>
 
 </body>
