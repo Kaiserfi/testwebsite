@@ -122,7 +122,7 @@
 <body>
 
     <div class="content-box">
-        <h1>IKaiserfi</h1>
+        <h1 id="player-name">IKaiserfi</h1>
         <p>Live Server Highscores</p>
         <div class="meta">
             <span id="meta-text"></span>
@@ -134,7 +134,14 @@
     </div>
 
     <script>
-        const username = 'IKaiserfi';
+        // Pick the player from the address, e.g. index.html?player=QuilledFiend
+        let username = 'IKaiserfi';
+        try {
+            const p = new URLSearchParams(location.search).get('player');
+            if (p && p.trim()) username = p.trim();
+        } catch (e) { /* keep default */ }
+        document.getElementById('player-name').textContent = username;
+        document.title = `${username}'s Stats`;
         const apiUrl = `https://api.wiseoldman.net/v2/players/${encodeURIComponent(username)}`;
 
         // Display order and labels (keys match Wise Old Man's API)
@@ -179,6 +186,10 @@
                 container.appendChild(card);
             }
 
+            if (player.displayName) {
+                document.getElementById('player-name').textContent = player.displayName;
+                document.title = `${player.displayName}'s Stats`;
+            }
             const updated = new Date(player.updatedAt).toLocaleString();
             metaText.textContent = `Combat ${player.combatLevel} · Last updated ${updated}`;
             loadingEl.style.display = 'none';
