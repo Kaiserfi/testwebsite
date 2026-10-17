@@ -114,8 +114,8 @@
         const username = 'IKaiserfi';
         const osrsUrl = `https://secure.runescape.com/m=hiscore_oldschool/index_lite.ws?player=${username}`;
         
-        // Updated proxy URL
-        const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(osrsUrl)}`;
+        // Use the /get endpoint to wrap the response in JSON, bypassing most Cloudflare blocks
+        const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(osrsUrl)}`;
 
         const skillsOrder = [
             "Overall", "Attack", "Defence", "Strength", "Hitpoints", "Ranged", 
@@ -126,21 +126,26 @@
 
         fetch(proxyUrl)
             .then(response => {
-                if (!response.ok) throw new Error('Could not fetch stats');
-                return response.text();
+                if (!response.ok) throw new Error('Proxy connection failed');
+                return response.json(); // Parse as JSON instead of raw text
             })
             .then(data => {
+                // If Jagex returns a 404 inside the proxy, the player isn't on the hiscores
+                if (data.status && data.status.http_code === 404) {
+                    throw new Error('Player not found');
+                }
+
                 document.getElementById('loading').style.display = 'none';
                 const container = document.getElementById('stats-container');
-                const lines = data.split('\n');
+                
+                // The actual OSRS text is now safely stored inside data.contents
+                const lines = data.contents.split('\n');
 
                 for (let i = 0; i < skillsOrder.length; i++) {
                     const skillData = lines[i].split(',');
                     
                     const level = skillData[1];
-                    // Parse the XP value and format it with commas
                     const xpRaw = parseInt(skillData[2]);
-                    // Only display XP if it is greater than -1 (unranked skills show -1 XP)
                     const xpDisplay = xpRaw >= 0 ? xpRaw.toLocaleString() + ' XP' : 'Unranked';
                     
                     const card = document.createElement('div');
@@ -150,7 +155,6 @@
                         card.classList.add('highlight');
                     }
 
-                    // Add the skill-xp div to the card
                     card.innerHTML = `
                         <div class="skill-name">${skillsOrder[i]}</div>
                         <div class="skill-level">${level}</div>
@@ -161,7 +165,7 @@
                 }
             })
             .catch(error => {
-                document.getElementById('loading').innerText = 'Error: Could not load stats. The API might be down.';
+                document.getElementById('loading').innerText = 'Error: Jagex servers are currently blocking the request.';
                 console.error(error);
             });
     </script>
