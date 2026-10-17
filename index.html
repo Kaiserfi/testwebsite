@@ -111,7 +111,7 @@
         const osrsUrl = `https://secure.runescape.com/m=hiscore_oldschool/index_lite.ws?player=${username}`;
         
         // The proxy to bypass browser CORS restrictions
-        const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(osrsUrl)}`;
+        const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(osrsUrl)}`;
 
         // The exact order OSRS returns the skills in their API
         const skillsOrder = [
