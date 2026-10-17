@@ -1,28 +1,64 @@
-a<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kaiserfi's Test Site</title>
+    <title>Kaiserfi's Site</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #282c34;
-            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            /* Deep black/charcoal gradient for a dark metallic base */
+            background: linear-gradient(135deg, #121212 0%, #1e1e1e 50%, #0a0a0a 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .content-box {
+            background: linear-gradient(145deg, #1a1a1a, #111111);
+            padding: 50px;
+            border-radius: 8px;
             text-align: center;
-            padding-top: 100px;
+            
+            /* Metallic red border and glowing shadow */
+            border: 2px solid #5a0000;
+            box-shadow: 0 8px 20px rgba(139, 0, 0, 0.4), 
+                        inset 0 0 15px rgba(255, 51, 51, 0.05);
         }
+
         h1 {
-            color: #61dafb;
+            margin-top: 0;
+            font-size: 3rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            
+            /* Metallic red text gradient */
+            background: linear-gradient(to right, #8b0000, #ff1a1a, #8b0000);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            
+            /* Subtle drop shadow for depth */
+            filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.8));
         }
+
         p {
             font-size: 1.2rem;
-            color: #cccccc;
+            color: #b3b3b3;
+            max-width: 400px;
+            margin: 0 auto;
+            line-height: 1.5;
         }
     </style>
 </head>
 <body>
-    <h1>Hello World!</h1>
-    <p>This is my very first website hosted live on GitHub Pages.</p>
+    <div class="content-box">
+        <h1>Hello World</h1>
+        <p>This site is now running a custom metallic red and black theme.</p>
+    </div>
 </body>
 </html>
