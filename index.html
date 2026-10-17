@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IKaiserfi's Stats</title>
+    <title>OSRS Stats</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -27,6 +27,41 @@
             max-width: 800px;
             width: 100%;
             box-sizing: border-box;
+        }
+
+        /* Player switcher */
+        .player-tabs {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 25px;
+        }
+
+        .player-tab {
+            background: #151515;
+            color: #888;
+            border: 1px solid #330000;
+            border-radius: 20px;
+            padding: 8px 20px;
+            font: inherit;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: border-color 0.2s, color 0.2s, background 0.2s;
+        }
+
+        .player-tab:hover {
+            border-color: #ff3333;
+            color: #e0e0e0;
+        }
+
+        .player-tab.active {
+            background: linear-gradient(145deg, #5a0000, #2a0a0a);
+            border-color: #ff1a1a;
+            color: #fff;
+            box-shadow: 0 0 10px rgba(255, 26, 26, 0.3);
         }
 
         h1 {
@@ -56,9 +91,10 @@
         #loading {
             color: #ff1a1a;
             font-style: italic;
+            margin-bottom: 15px;
         }
 
-        button {
+        .refresh-btn {
             background: #2a0a0a;
             color: #e0e0e0;
             border: 1px solid #8b0000;
@@ -68,14 +104,17 @@
             cursor: pointer;
             font: inherit;
         }
-        button:hover { border-color: #ff3333; }
-        button:disabled { opacity: 0.5; cursor: default; }
+        .refresh-btn:hover { border-color: #ff3333; }
+        .refresh-btn:disabled { opacity: 0.5; cursor: default; }
 
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
             gap: 15px;
+            transition: opacity 0.2s;
         }
+
+        .stats-grid.fading { opacity: 0.3; }
 
         .stat-card {
             background: #151515;
@@ -122,11 +161,13 @@
 <body>
 
     <div class="content-box">
-        <h1 id="player-name">IKaiserfi</h1>
+        <div class="player-tabs" id="player-tabs"></div>
+
+        <h1 id="player-name"></h1>
         <p>Live Server Highscores</p>
         <div class="meta">
             <span id="meta-text"></span>
-            <button id="refresh-btn" type="button">Update from hiscores</button>
+            <button class="refresh-btn" id="refresh-btn" type="button">Update from hiscores</button>
         </div>
 
         <div id="loading">Fetching data from Gielinor...</div>
@@ -134,17 +175,10 @@
     </div>
 
     <script>
-        // Pick the player from the address, e.g. index.html?player=QuilledFiend
-        let username = 'IKaiserfi';
-        try {
-            const p = new URLSearchParams(location.search).get('player');
-            if (p && p.trim()) username = p.trim();
-        } catch (e) { /* keep default */ }
-        document.getElementById('player-name').textContent = username;
-        document.title = `${username}'s Stats`;
-        const apiUrl = `https://api.wiseoldman.net/v2/players/${encodeURIComponent(username)}`;
+        // ===== Add or remove players here =====
+        const players = ['IKaiserfi', 'QuilledFiend'];
+        // ======================================
 
-        // Display order and labels (keys match Wise Old Man's API)
         const skills = [
             ["overall", "Overall"], ["attack", "Attack"], ["defence", "Defence"],
             ["strength", "Strength"], ["hitpoints", "Hitpoints"], ["ranged", "Ranged"],
@@ -158,10 +192,35 @@
         ];
         const highlighted = new Set(["herblore", "smithing"]);
 
+        const tabsEl = document.getElementById('player-tabs');
+        const nameEl = document.getElementById('player-name');
         const loadingEl = document.getElementById('loading');
         const container = document.getElementById('stats-container');
         const metaText = document.getElementById('meta-text');
         const refreshBtn = document.getElementById('refresh-btn');
+
+        const cache = {};        // stats already loaded, by player name
+        let current = null;      // player currently shown
+        let requestId = 0;       // ignores slow responses after you switch players
+
+        const apiUrl = name => `https://api.wiseoldman.net/v2/players/${encodeURIComponent(name)}`;
+
+        // Build the buttons
+        players.forEach(name => {
+            const btn = document.createElement('button');
+            btn.className = 'player-tab';
+            btn.type = 'button';
+            btn.textContent = name;
+            btn.dataset.player = name;
+            btn.addEventListener('click', () => showPlayer(name));
+            tabsEl.appendChild(btn);
+        });
+
+        function setActiveTab(name) {
+            tabsEl.querySelectorAll('.player-tab').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.player === name);
+            });
+        }
 
         function render(player) {
             const data = player.latestSnapshot && player.latestSnapshot.data;
@@ -186,53 +245,83 @@
                 container.appendChild(card);
             }
 
-            if (player.displayName) {
-                document.getElementById('player-name').textContent = player.displayName;
-                document.title = `${player.displayName}'s Stats`;
-            }
+            const display = player.displayName || current;
+            nameEl.textContent = display;
+            document.title = `${display}'s Stats`;
             const updated = new Date(player.updatedAt).toLocaleString();
             metaText.textContent = `Combat ${player.combatLevel} · Last updated ${updated}`;
             loadingEl.style.display = 'none';
+            container.classList.remove('fading');
         }
 
         function showError(msg) {
             loadingEl.style.display = 'block';
             loadingEl.innerText = msg;
+            container.classList.remove('fading');
         }
 
-        // GET: read the latest stored stats (fast, no rate-limit worries)
-        function loadStats() {
-            return fetch(apiUrl)
+        // Switch to a player (uses saved data if we already have it)
+        function showPlayer(name) {
+            current = name;
+            setActiveTab(name);
+            nameEl.textContent = name;
+            document.title = `${name}'s Stats`;
+
+            // Keep the address in sync so the link can be shared
+            try {
+                const url = new URL(location.href);
+                url.searchParams.set('player', name);
+                history.replaceState(null, '', url);
+            } catch (e) { /* not supported when opened as a local file in some browsers */ }
+
+            if (cache[name]) {
+                render(cache[name]);
+                return;
+            }
+
+            const myRequest = ++requestId;
+            metaText.textContent = '';
+            loadingEl.style.display = 'block';
+            loadingEl.innerText = 'Fetching data from Gielinor...';
+            container.classList.add('fading');
+
+            fetch(apiUrl(name))
                 .then(r => {
                     if (r.status === 404) throw new Error('not-tracked');
                     if (!r.ok) throw new Error('HTTP ' + r.status);
                     return r.json();
                 })
-                .then(render)
+                .then(player => {
+                    cache[name] = player;
+                    if (myRequest === requestId) render(player);
+                })
                 .catch(err => {
-                    if (err.message === 'not-tracked') {
-                        // First visit: ask Wise Old Man to start tracking this player
-                        return updateStats();
-                    }
+                    if (myRequest !== requestId) return;
+                    if (err.message === 'not-tracked') return updateStats();
                     console.error(err);
                     showError('Error: could not load stats right now. Try again in a minute.');
                 });
         }
 
-        // POST: tell Wise Old Man to pull fresh numbers from the official hiscores
+        // Ask Wise Old Man to pull fresh numbers from the official hiscores
         function updateStats() {
+            const name = current;
             refreshBtn.disabled = true;
             refreshBtn.textContent = 'Updating...';
-            return fetch(apiUrl, { method: 'POST' })
+
+            return fetch(apiUrl(name), { method: 'POST' })
                 .then(r => {
                     if (r.status === 429) throw new Error('Updated too recently, wait a minute and try again.');
                     if (!r.ok) throw new Error('Update failed (HTTP ' + r.status + ').');
                     return r.json();
                 })
-                .then(render)
+                .then(player => {
+                    cache[name] = player;
+                    if (current === name) render(player);
+                })
                 .catch(err => {
                     console.error(err);
-                    metaText.textContent = err.message;
+                    if (current === name) metaText.textContent = err.message;
                 })
                 .finally(() => {
                     refreshBtn.disabled = false;
@@ -241,7 +330,17 @@
         }
 
         refreshBtn.addEventListener('click', updateStats);
-        loadStats();
+
+        // Start on ?player=Name if given, otherwise the first player in the list
+        let start = players[0];
+        try {
+            const p = new URLSearchParams(location.search).get('player');
+            if (p) {
+                const match = players.find(n => n.toLowerCase() === p.toLowerCase());
+                start = match || p;
+            }
+        } catch (e) { /* keep default */ }
+        showPlayer(start);
     </script>
 
 </body>
