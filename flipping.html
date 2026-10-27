@@ -96,11 +96,14 @@
             text-transform: uppercase; letter-spacing: 0.5px; border: 1px solid;
         }
         .pill.you { color: #ff3333; border-color: #ff1a1a; background: #2a0a0a; }
-        .pill.t-bronze { color: #d29a6a; border-color: #6b3d17; background: #1d140d; }
-        .pill.t-silver { color: #cfcfcf; border-color: #6e6e6e; background: #1a1a1a; }
-        .pill.t-gold   { color: #e8c04a; border-color: #8a6500; background: #1f1a0b; }
-        .pill.t-rune   { color: #5fc9d6; border-color: #22606a; background: #0f1b1d; }
-        .pill.t-dragon { color: #ff4d4d; border-color: #8b0000; background: #2a0a0a; }
+        .pill.t-bronze  { color: #d29a6a; border-color: #6b3d17; background: #1d140d; }
+        .pill.t-iron    { color: #b5b0aa; border-color: #5a5550; background: #191817; }
+        .pill.t-steel   { color: #c9d3dc; border-color: #6f7a85; background: #161a1e; }
+        .pill.t-black   { color: #9a9a9a; border-color: #444; background: #050505; }
+        .pill.t-mithril { color: #8f9fe8; border-color: #3b4785; background: #12152a; }
+        .pill.t-adamant { color: #7fc97f; border-color: #2f6b2f; background: #0f1d0f; }
+        .pill.t-rune    { color: #5fc9d6; border-color: #22606a; background: #0f1b1d; }
+        .pill.t-dragon  { color: #ff4d4d; border-color: #8b0000; background: #2a0a0a; }
         .item { color: #8b5555; font-size: 0.75rem; margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
         .val { text-align: right; min-width: 78px; }
@@ -164,8 +167,9 @@
     // =================================================================
 
     const LABELS = { h1: 'hour', h12: '12 hours', h24: '24 hours' };
-    // Tier badge from a player's profit over the last 24 hours
-    const TIERS = [[100e6, 'Dragon', 'dragon'], [50e6, 'Rune', 'rune'], [10e6, 'Gold', 'gold'], [1e6, 'Silver', 'silver'], [-Infinity, 'Bronze', 'bronze']];
+    // Tier badge from a player's profit over the last 24 hours (no badge until they're in profit)
+    const TIERS = [[50e6, 'Dragon'], [30e6, 'Rune'], [20e6, 'Adamant'], [15e6, 'Mithril'], [10e6, 'Black'],
+        [7.5e6, 'Steel'], [5e6, 'Iron'], [1, 'Bronze']];
     let data = null, win = 'h1';
     let me = '';
     try { me = localStorage.getItem('flip-me') || ''; } catch (e) {}
@@ -186,7 +190,10 @@
         const day = data && data.windows.h24.current.find(p => canon(p.name) === canon(name));
         const p = day ? day.profit : 0;
         const t = TIERS.find(([min]) => p >= min);
-        return `<span class="pill t-${t[2]}">${t[1]}</span>`;
+        if (!t) return '';
+        const next = TIERS[TIERS.indexOf(t) - 1];
+        const tip = `${t[1]} flipper: ${gp(p)} in the last 24 hours` + (next ? ` (${next[1]} at ${gp(next[0], false)})` : '');
+        return `<span class="pill t-${t[1].toLowerCase()}" title="${esc(tip)}">${t[1]}</span>`;
     }
 
     function list(el, rows, value, opts) {
