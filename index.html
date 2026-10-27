@@ -477,7 +477,7 @@
                 const nameCell = document.createElement('div');
                 const nameEl = document.createElement('div');
                 nameEl.className = 'player-name';
-                nameEl.textContent = (st.player && st.player.displayName) || name;
+                nameEl.textContent = name;
                 nameCell.appendChild(nameEl);
                 if (s) {
                     const bar = document.createElement('div');
@@ -533,7 +533,7 @@
             box.hidden = false;
 
             const p = st.player;
-            $('profile-name').textContent = p.displayName || selectedPlayer;
+            $('profile-name').textContent = selectedPlayer;
             $('profile-meta').textContent =
                 `Combat ${p.combatLevel} · Last updated ${new Date(p.updatedAt).toLocaleString()}`;
 
