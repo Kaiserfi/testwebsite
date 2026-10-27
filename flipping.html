@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flipping Leaderboard</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 40px 16px;
+            background: linear-gradient(135deg, #121212 0%, #1e1e1e 50%, #0a0a0a 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+        }
+        .content-box {
+            background: linear-gradient(145deg, #1a1a1a, #111111);
+            padding: 36px;
+            border-radius: 8px;
+            text-align: center;
+            border: 2px solid #5a0000;
+            box-shadow: 0 8px 20px rgba(139, 0, 0, 0.4), inset 0 0 15px rgba(255, 51, 51, 0.05);
+            max-width: 800px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        h1 {
+            margin: 0 0 5px;
+            font-size: 2.5rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            background: linear-gradient(to right, #8b0000, #ff1a1a, #8b0000);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.8));
+        }
+        .subtitle { color: #b3b3b3; margin: 0 0 25px; }
+        .nav { margin: -12px 0 22px; font-size: 0.85rem; }
+        .nav a { color: #ff3333; text-decoration: none; }
+        .nav a:hover { text-decoration: underline; }
+
+        .tabs { display: flex; justify-content: center; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+        .tab {
+            background: #151515; color: #e0e0e0; border: 1px solid #5a0000; border-radius: 4px;
+            padding: 8px 16px; font: inherit; font-size: 0.9rem; cursor: pointer;
+        }
+        .tab:hover { border-color: #ff3333; }
+        .tab.active { background: linear-gradient(145deg, #5a0000, #2a0a0a); border-color: #ff1a1a; box-shadow: 0 0 8px rgba(255, 26, 26, 0.35); }
+
+        .reset { color: #b3b3b3; font-size: 0.9rem; margin-bottom: 6px; }
+        .reset b { color: #e0e0e0; font-variant-numeric: tabular-nums; }
+        .status { font-size: 0.8rem; color: #777; min-height: 1.2em; margin-bottom: 15px; }
+
+        .board { text-align: left; border: 1px solid #330000; border-radius: 6px; overflow: hidden; }
+        .board-head, .board-row {
+            display: grid; grid-template-columns: 52px 1fr 70px 140px;
+            align-items: center; gap: 10px; padding: 12px 16px;
+        }
+        .board-head {
+            background: #0d0d0d; color: #777; font-size: 0.75rem; text-transform: uppercase;
+            letter-spacing: 1px; border-bottom: 1px solid #330000;
+        }
+        .board-row { background: #151515; border-bottom: 1px solid #221010; }
+        .board-row:last-child { border-bottom: none; }
+        .num { text-align: right; font-variant-numeric: tabular-nums; }
+        .rank { font-weight: bold; font-size: 1.1rem; color: #777; text-align: center; }
+        .medal {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 30px; height: 30px; border-radius: 50%; font-size: 0.95rem; color: #111;
+        }
+        .medal.gold   { background: radial-gradient(circle at 35% 35%, #fff3b0, #d4a017 60%, #8a6500); }
+        .medal.silver { background: radial-gradient(circle at 35% 35%, #ffffff, #b8b8b8 60%, #6e6e6e); }
+        .medal.bronze { background: radial-gradient(circle at 35% 35%, #ffd2a6, #b8733a 60%, #6b3d17); }
+        .player-name { font-weight: bold; color: #e0e0e0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .updated { font-size: 0.72rem; color: #777; margin-top: 2px; font-weight: normal; }
+        .profit { font-size: 1.15rem; font-weight: bold; }
+        .profit.pos { color: #2ecc71; text-shadow: 0 0 10px rgba(46, 204, 113, 0.2); }
+        .profit.neg { color: #ff4d4d; }
+        .flips { color: #ccc; }
+        .muted { color: #666; font-style: italic; padding: 18px 16px; background: #151515; }
+
+        .previous { margin-top: 26px; padding-top: 18px; border-top: 1px solid #330000; color: #b3b3b3; font-size: 0.9rem; }
+        .previous b { color: #d4a017; }
+
+        @media (max-width: 560px) {
+            .content-box { padding: 24px 14px; }
+            h1 { font-size: 1.8rem; }
+            .board-head, .board-row { grid-template-columns: 40px 1fr 46px 100px; gap: 8px; padding: 10px; }
+            .profit { font-size: 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="content-box">
+        <h1>Flipping Leaderboard</h1>
+        <p class="subtitle">LaidBackCrew Grand Exchange profit (Flip Ledger)</p>
+        <div class="nav"><a href="index.html">&larr; Skills leaderboard</a></div>
+
+        <div class="tabs" role="tablist">
+            <button class="tab active" data-win="h1" role="tab" aria-selected="true">1 hour</button>
+            <button class="tab" data-win="h12" role="tab" aria-selected="false">12 hours</button>
+            <button class="tab" data-win="h24" role="tab" aria-selected="false">24 hours</button>
+        </div>
+        <div class="reset" id="reset"></div>
+        <div class="status" id="status">Loading...</div>
+
+        <div class="board">
+            <div class="board-head">
+                <div style="text-align:center">#</div>
+                <div>Player</div>
+                <div class="num">Flips</div>
+                <div class="num">Profit</div>
+            </div>
+            <div id="rows"></div>
+        </div>
+
+        <div class="previous" id="previous" hidden></div>
+    </div>
+
+    <script>
+        // ===== Edit this: your Worker's address (no trailing slash) =====
+        const WORKER_URL = 'https://flip-leaderboard.kaiserfi918.workers.dev';
+        // =================================================================
+
+        const LABELS = { h1: 'hour', h12: '12 hours', h24: '24 hours' };
+        let data = null;
+        let win = 'h1';
+
+        const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+        function gp(n) {
+            const a = Math.abs(n), s = n < 0 ? '-' : '+';
+            if (a >= 1e9) return s + (a / 1e9).toFixed(2) + 'B';
+            if (a >= 1e7) return s + (a / 1e6).toFixed(1) + 'M';
+            if (a >= 1e6) return s + (a / 1e6).toFixed(2) + 'M';
+            if (a >= 1e4) return s + (a / 1e3).toFixed(a >= 1e5 ? 0 : 1) + 'k';
+            return s + a.toLocaleString();
+        }
+        const et = t => new Date(t * 1000).toLocaleTimeString('en-US', { timeZone: 'America/New_York', hour: 'numeric', minute: '2-digit' });
+        function ago(t) {
+            const m = Math.floor((Date.now() / 1000 - t) / 60);
+            return m < 1 ? 'just now' : m < 60 ? m + 'm ago' : Math.floor(m / 60) + 'h ago';
+        }
+        function medal(i) {
+            if (i > 2) return i + 1;
+            return `<span class="medal ${['gold', 'silver', 'bronze'][i]}">${i + 1}</span>`;
+        }
+
+        function render() {
+            const rows = document.getElementById('rows');
+            if (!data) return;
+            const w = data.windows[win];
+            const left = Math.max(0, w.end - Math.floor(Date.now() / 1000));
+            const h = Math.floor(left / 3600), m = Math.floor((left % 3600) / 60), s = left % 60;
+            document.getElementById('reset').innerHTML =
+                `Started ${et(w.start)} ET &middot; resets in <b>${h ? h + 'h ' : ''}${m}m ${String(s).padStart(2, '0')}s</b>`;
+
+            if (!w.current.length) {
+                rows.innerHTML = `<div class="muted">No flips this ${LABELS[win]} yet.</div>`;
+            } else {
+                rows.innerHTML = w.current.map((p, i) => `
+                    <div class="board-row">
+                        <div class="rank">${medal(i)}</div>
+                        <div class="player-name">${esc(p.name)}<div class="updated">updated ${ago(p.updated)}</div></div>
+                        <div class="num flips">${p.flips}</div>
+                        <div class="num profit ${p.profit >= 0 ? 'pos' : 'neg'}">${gp(p.profit)}</div>
+                    </div>`).join('');
+            }
+
+            const prev = w.previous && w.previous[0];
+            document.getElementById('previous').hidden = !prev;
+            document.getElementById('previous').innerHTML = prev
+                ? `Last ${LABELS[win]} (${et(w.previousStart)} ET): winner <b>${esc(prev.name)}</b> with ${gp(prev.profit)}`
+                : '';
+        }
+
+        async function load() {
+            try {
+                const r = await fetch(WORKER_URL + '/leaderboard', { cache: 'no-store' });
+                if (!r.ok) throw new Error(r.status);
+                data = await r.json();
+                document.getElementById('status').textContent = 'Updated ' + new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+                render();
+            } catch (e) {
+                document.getElementById('status').textContent = "Couldn't load the leaderboard. Retrying...";
+            }
+        }
+
+        document.querySelectorAll('.tab').forEach(b => b.addEventListener('click', () => {
+            win = b.dataset.win;
+            document.querySelectorAll('.tab').forEach(t => {
+                t.classList.toggle('active', t === b);
+                t.setAttribute('aria-selected', t === b);
+            });
+            render();
+        }));
+
+        load();
+        setInterval(load, 60000);  // fresh scores every minute
+        setInterval(() => {         // countdown ticks; reload right after a reset
+            if (data && Math.floor(Date.now() / 1000) >= data.windows[win].end) load();
+            render();
+        }, 1000);
+    </script>
+</body>
+</html>
