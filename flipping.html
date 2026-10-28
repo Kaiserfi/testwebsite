@@ -25,7 +25,7 @@
             text-align: center;
             border: 2px solid #5a0000;
             box-shadow: 0 8px 20px rgba(139, 0, 0, 0.4), inset 0 0 15px rgba(255, 51, 51, 0.05);
-            max-width: 1180px;
+            max-width: 1440px;
             width: 100%;
         }
 
@@ -61,7 +61,7 @@
         .reset b { color: #fff; font-variant-numeric: tabular-nums; }
         .status { font-size: 0.8rem; color: #777; min-height: 1.2em; margin-bottom: 18px; }
 
-        .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; text-align: left; }
+        .grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; text-align: left; }
         .board { border: 1px solid #330000; border-radius: 6px; overflow: hidden; background: #151515; }
         .board-title {
             display: flex; align-items: center; gap: 10px;
@@ -119,7 +119,8 @@
         .previous { margin-top: 18px; color: #888; font-size: 0.85rem; }
         .previous b { color: #d4a017; }
 
-        @media (max-width: 960px) { .grid { grid-template-columns: 1fr; } }
+        @media (max-width: 1240px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+        @media (max-width: 720px) { .grid { grid-template-columns: 1fr; } }
         @media (max-width: 520px) {
             .content-box { padding: 24px 12px; }
             h1 { font-size: 1.7rem; letter-spacing: 2px; }
@@ -155,6 +156,10 @@
         <section class="board">
             <div class="board-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/></svg>Best single flip</div>
             <div id="best"></div>
+        </section>
+        <section class="board">
+            <div class="board-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7l6 6 4-4 8 8"/><path d="M21 11v6h-6"/></svg>Biggest loss</div>
+            <div id="worst"></div>
         </section>
     </div>
 
@@ -198,7 +203,7 @@
 
     function list(el, rows, value, opts) {
         if (!rows.length) {
-            el.innerHTML = `<div class="empty">No flips this ${LABELS[win]} yet.</div>`;
+            el.innerHTML = `<div class="empty">${opts.empty || `No flips this ${LABELS[win]} yet.`}</div>`;
             return;
         }
         const max = Math.max(...rows.map(r => Math.abs(value(r)))) || 1;
@@ -208,7 +213,7 @@
             return `<div class="row${isMe ? ' you' : ''}">
                 <div class="rank">${i < 3 ? `<span class="medal ${['gold', 'silver', 'bronze'][i]}">${i + 1}</span>` : i + 1}</div>
                 <div class="who">
-                    <div class="name"><strong>${esc(r.name)}</strong>${isMe ? '<span class="pill you">YOU</span>' : ''}${tierOf(r.name)}</div>
+                    <div class="name"><strong>${esc(r.name)}</strong>${isMe ? '<span class="pill you">YOU</span>' : ''}${opts.tier ? tierOf(r.name) : ''}</div>
                     ${opts.sub ? `<div class="item">${esc(opts.sub(r) || '')}</div>` : ''}
                 </div>
                 <div class="val">
@@ -230,11 +235,13 @@
         const cur = w.current.slice();
         const green = 'var(--green)', red = 'var(--red)';
         list(document.getElementById('profit'), cur.slice().sort((a, b) => b.profit - a.profit), r => r.profit,
-            { fmt: gp, cls: v => v >= 0 ? 'pos' : 'neg', color: v => v >= 0 ? green : red });
+            { fmt: gp, cls: v => v >= 0 ? 'pos' : 'neg', color: v => v >= 0 ? green : red, tier: true });
         list(document.getElementById('flips'), cur.filter(r => r.flips > 0).sort((a, b) => b.flips - a.flips || b.profit - a.profit), r => r.flips,
             { fmt: v => v.toLocaleString(), cls: () => 'flips', color: () => 'var(--blue)' });
         list(document.getElementById('best'), cur.filter(r => r.best != null).sort((a, b) => b.best - a.best), r => r.best,
             { fmt: gp, cls: v => v >= 0 ? 'pos' : 'neg', color: v => v >= 0 ? green : red, sub: r => r.bestItem });
+        list(document.getElementById('worst'), cur.filter(r => r.worst != null && r.worst < 0).sort((a, b) => a.worst - b.worst), r => r.worst,
+            { fmt: gp, cls: () => 'neg', color: () => red, sub: r => r.worstItem, empty: `No losing flips this ${LABELS[win]}.` });
 
         const prev = w.previous && w.previous.slice().sort((a, b) => b.profit - a.profit)[0];
         document.getElementById('previous').innerHTML = prev
