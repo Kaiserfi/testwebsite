@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RedRune Highscores</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 40px 16px;
+            background: linear-gradient(135deg, #121212 0%, #1e1e1e 50%, #0a0a0a 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+        }
+
+        .content-box {
+            background: linear-gradient(145deg, #1a1a1a, #111111);
+            padding: 36px;
+            border-radius: 8px;
+            text-align: center;
+            border: 2px solid #5a0000;
+            box-shadow: 0 8px 20px rgba(139, 0, 0, 0.4),
+                        inset 0 0 15px rgba(255, 51, 51, 0.05);
+            max-width: 800px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            margin: 0 0 5px;
+            font-size: 2.5rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            background: linear-gradient(to right, #8b0000, #ff1a1a, #8b0000);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.8));
+        }
+
+        .subtitle {
+            color: #b3b3b3;
+            margin: 0 0 25px;
+        }
+
+        /* ---------- Controls ---------- */
+        .controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .controls label {
+            color: #888;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        select, .btn {
+            background: #151515;
+            color: #e0e0e0;
+            border: 1px solid #5a0000;
+            border-radius: 4px;
+            padding: 7px 12px;
+            font: inherit;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+        select:hover, .btn:hover { border-color: #ff3333; }
+        .btn:disabled { opacity: 0.5; cursor: default; }
+
+                /* Skill icons */
+        .skill-icon {
+            width: 22px;
+            height: 22px;
+            object-fit: contain;
+            vertical-align: middle;
+        }
+
+        .ranked-by {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: #e0e0e0;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.9rem;
+        }
+
+        .skill-picker {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(38px, 1fr));
+            gap: 6px;
+            max-width: 560px;
+            margin: 0 auto 18px;
+        }
+
+        .skill-pick {
+            background: #151515;
+            border: 1px solid #330000;
+            border-radius: 6px;
+            padding: 6px 0;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: border-color 0.2s, background 0.2s, transform 0.15s;
+        }
+        .skill-pick:hover { border-color: #ff3333; transform: translateY(-2px); }
+        .skill-pick.active {
+            background: linear-gradient(145deg, #5a0000, #2a0a0a);
+            border-color: #ff1a1a;
+            box-shadow: 0 0 8px rgba(255, 26, 26, 0.35);
+        }
+
+        .status {
+            font-size: 0.8rem;
+            color: #777;
+            min-height: 1.2em;
+            margin-bottom: 15px;
+        }
+
+        /* ---------- Leaderboard ---------- */
+        .board {
+            text-align: left;
+            border: 1px solid #330000;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .board-head, .board-row {
+            display: grid;
+            grid-template-columns: 52px 1fr 70px 130px;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+        }
+
+        .board-head {
+            background: #0d0d0d;
+            color: #777;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid #330000;
+        }
+
+        .board-row {
+            background: #151515;
+            border-bottom: 1px solid #221010;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .board-row:last-child { border-bottom: none; }
+        .board-row:hover { background: #1f1212; }
+        .board-row.selected {
+            background: linear-gradient(90deg, #2a0a0a, #151515);
+            box-shadow: inset 3px 0 0 #ff1a1a;
+        }
+
+        .num { text-align: right; }
+
+        .rank {
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: #777;
+            text-align: center;
+        }
+
+        .medal {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            font-size: 0.95rem;
+            color: #111;
+        }
+        .medal.gold   { background: radial-gradient(circle at 35% 35%, #fff3b0, #d4a017 60%, #8a6500); }
+        .medal.silver { background: radial-gradient(circle at 35% 35%, #ffffff, #b8b8b8 60%, #6e6e6e); }
+        .medal.bronze { background: radial-gradient(circle at 35% 35%, #ffd2a6, #b8733a 60%, #6b3d17); }
+
+        .player-name {
+            font-weight: bold;
+            color: #e0e0e0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .bar {
+            height: 4px;
+            background: #2a1515;
+            border-radius: 2px;
+            margin-top: 6px;
+            overflow: hidden;
+        }
+        .bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #8b0000, #ff1a1a);
+            border-radius: 2px;
+            transition: width 0.5s ease;
+        }
+
+        .level {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #e0e0e0;
+            text-shadow: 0 0 10px rgba(255, 51, 51, 0.3);
+        }
+
+        .xp { font-size: 0.9rem; color: #ccc; }
+        .gap { font-size: 0.72rem; color: #8b5555; margin-top: 2px; }
+        .gap.leader { color: #d4a017; }
+
+        .muted { color: #666; font-style: italic; }
+
+        /* ---------- Player profile ---------- */
+        .profile {
+            margin-top: 30px;
+            padding-top: 25px;
+            border-top: 1px solid #330000;
+        }
+
+        .profile h2 {
+            margin: 0 0 4px;
+            font-size: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #ff3333;
+        }
+
+        .profile .meta {
+            font-size: 0.85rem;
+            color: #777;
+            margin-bottom: 20px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+            gap: 15px;
+        }
+
+        .stat-card {
+            background: #151515;
+            border: 1px solid #330000;
+            padding: 15px 10px;
+            border-radius: 6px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.6);
+            transition: transform 0.2s, border-color 0.2s;
+            cursor: pointer;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+            border-color: #ff3333;
+        }
+        .stat-card.current {
+            border-color: #ff1a1a;
+            background: linear-gradient(145deg, #2a0a0a, #151515);
+        }
+
+        .stat-card .skill-icon {
+            display: block;
+            margin: 0 auto 6px;
+            width: 26px;
+            height: 26px;
+        }
+
+        .skill-name {
+            font-size: 0.8rem;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+        .skill-level {
+            font-size: 1.8rem;
+            color: #e0e0e0;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(255, 51, 51, 0.3);
+        }
+        .skill-xp {
+            font-size: 0.75rem;
+            color: #999;
+            margin-top: 5px;
+        }
+
+        /* ---------- Phones ---------- */
+        @media (max-width: 560px) {
+            .content-box { padding: 24px 14px; }
+            h1 { font-size: 1.8rem; }
+            .board-head, .board-row {
+                grid-template-columns: 40px 1fr 52px 96px;
+                gap: 8px;
+                padding: 10px;
+            }
+            .level { font-size: 1.15rem; }
+            .xp { font-size: 0.8rem; }
+        }
+    
+        /* Text badge for skills without an icon file (Summoning, Dungeoneering) */
+        .skill-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 22px;
+            height: 22px;
+            border-radius: 4px;
+            background: #2a0a0a;
+            border: 1px solid #5a0000;
+            color: #ff6666;
+            font-size: 0.6rem;
+            font-weight: bold;
+            vertical-align: middle;
+        }
+        .stat-card .skill-badge { display: flex; margin: 0 auto 6px; width: 26px; height: 26px; }
+        .nav-links { margin: -12px 0 20px; font-size: 0.85rem; }
+        .nav-links a { color: #ff3333; text-decoration: none; margin: 0 8px; }
+        .combat { color: #888; font-size: 0.75rem; font-weight: normal; margin-left: 6px; }
+        .board-row > div { min-width: 0; }   /* let long names shrink instead of pushing XP off-screen */
+        @media (max-width: 560px) {
+            .combat { display: none; }
+            .board-head, .board-row { grid-template-columns: 34px minmax(0, 1fr) 46px 88px; }
+            .xp { font-size: 0.72rem; }
+            .gap { font-size: 0.62rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="content-box">
+        <h1>RedRune</h1>
+        <p class="subtitle">Server Highscores</p>
+        <div class="nav-links"><a href="index.html">&larr; OSRS leaderboard</a><a href="flipping.html">Flipping leaderboard &rarr;</a></div>
+
+        <div class="skill-picker" id="skill-picker"></div>
+
+        <div class="controls">
+            <label>Ranked by</label>
+            <span class="ranked-by" id="ranked-by"></span>
+        </div>
+        <div class="status" id="status">Loading…</div>
+
+        <div class="board">
+            <div class="board-head">
+                <div style="text-align:center">#</div>
+                <div>Player</div>
+                <div class="num">Level</div>
+                <div class="num">XP</div>
+            </div>
+            <div id="board-rows"></div>
+        </div>
+
+        <div class="profile" id="profile" hidden>
+            <h2 id="profile-name"></h2>
+            <div class="meta"><span id="profile-meta"></span></div>
+            <div class="stats-grid" id="profile-grid"></div>
+        </div>
+    </div>
+
+    <script>
+        // Rankings come from redrune-highscores.json, which the RedRune server
+        // uploads to this repo every 10 minutes (HighscoresPublisher.java).
+        const DATA_URL = 'redrune-highscores.json';
+
+        // Icon file for each skill (in the icons folder). null = show a text badge instead.
+        const ICONS = {
+            Overall: 'Stats', Constitution: 'Hitpoints', Runecrafting: 'Runecraft',
+            Summoning: null, Dungeoneering: null
+        };
+        const BADGES = { Summoning: 'Su', Dungeoneering: 'Dg' };
+
+        const $ = id => document.getElementById(id);
+        const compact = new Intl.NumberFormat('en', { notation: 'compact', maximumFractionDigits: 1 });
+
+        let skills = [];          // skill names from the data file
+        let players = [];
+        let current = -1;         // -1 = Overall, otherwise skill index
+        let selected = null;
+
+        const labelOf = i => i < 0 ? 'Overall' : skills[i];
+
+        function makeIcon(i) {
+            const name = labelOf(i);
+            const file = name in ICONS ? ICONS[name] : name;
+            if (!file) {
+                const b = document.createElement('span');
+                b.className = 'skill-badge';
+                b.textContent = BADGES[name] || name.slice(0, 2);
+                return b;
+            }
+            const img = document.createElement('img');
+            img.className = 'skill-icon';
+            img.src = `icons/${file}_icon.png`;
+            img.alt = '';
+            img.loading = 'lazy';
+            img.onerror = () => { img.style.visibility = 'hidden'; };
+            return img;
+        }
+
+        function statOf(p, i) {
+            return i < 0 ? { level: p.totalLevel, xp: p.totalXp } : { level: p.levels[i], xp: p.xp[i] };
+        }
+
+        function buildPicker() {
+            const picker = $('skill-picker');
+            picker.innerHTML = '';
+            for (let i = -1; i < skills.length; i++) {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'skill-pick';
+                btn.dataset.skill = i;
+                btn.title = labelOf(i);
+                btn.setAttribute('aria-label', labelOf(i));
+                btn.appendChild(makeIcon(i));
+                btn.addEventListener('click', () => setSkill(i));
+                picker.appendChild(btn);
+            }
+        }
+
+        function setSkill(i) {
+            current = i;
+            document.querySelectorAll('.skill-pick').forEach(b =>
+                b.classList.toggle('active', Number(b.dataset.skill) === i));
+            const rb = $('ranked-by');
+            rb.innerHTML = '';
+            rb.append(makeIcon(i), document.createTextNode(labelOf(i)));
+            renderBoard();
+            renderProfile();
+        }
+
+        function renderBoard() {
+            const rowsEl = $('board-rows');
+            rowsEl.innerHTML = '';
+            const ranked = players.slice().sort((a, b) =>
+                statOf(b, current).xp - statOf(a, current).xp || statOf(b, current).level - statOf(a, current).level);
+            const topXp = ranked.length ? statOf(ranked[0], current).xp : 0;
+
+            ranked.forEach((p, i) => {
+                const s = statOf(p, current);
+                const row = document.createElement('div');
+                row.className = 'board-row' + (p.name === selected ? ' selected' : '');
+                row.addEventListener('click', () => selectPlayer(p.name));
+
+                const rankEl = document.createElement('div');
+                rankEl.className = 'rank';
+                if (i < 3 && s.xp > 0) {
+                    const m = document.createElement('span');
+                    m.className = 'medal ' + ['gold', 'silver', 'bronze'][i];
+                    m.textContent = i + 1;
+                    rankEl.appendChild(m);
+                } else {
+                    rankEl.textContent = i + 1;
+                }
+
+                const nameCell = document.createElement('div');
+                const nameEl = document.createElement('div');
+                nameEl.className = 'player-name';
+                nameEl.textContent = p.name;
+                const cb = document.createElement('span');
+                cb.className = 'combat';
+                cb.textContent = `(cb ${p.combat})`;
+                nameEl.appendChild(cb);
+                const bar = document.createElement('div');
+                bar.className = 'bar';
+                const fill = document.createElement('div');
+                fill.className = 'bar-fill';
+                fill.style.width = topXp ? (s.xp / topXp * 100) + '%' : '0%';
+                bar.appendChild(fill);
+                nameCell.append(nameEl, bar);
+
+                const levelEl = document.createElement('div');
+                levelEl.className = 'num level';
+                levelEl.textContent = s.level;
+
+                const xpEl = document.createElement('div');
+                xpEl.className = 'num';
+                const xpLine = document.createElement('div');
+                xpLine.className = 'xp';
+                xpLine.textContent = s.xp.toLocaleString();
+                const gapLine = document.createElement('div');
+                if (i === 0 && s.xp > 0) {
+                    gapLine.className = 'gap leader';
+                    gapLine.textContent = 'Leader';
+                } else if (topXp) {
+                    gapLine.className = 'gap';
+                    gapLine.textContent = '−' + compact.format(topXp - s.xp) + ' behind';
+                }
+                xpEl.append(xpLine, gapLine);
+
+                row.append(rankEl, nameCell, levelEl, xpEl);
+                rowsEl.appendChild(row);
+            });
+        }
+
+        function selectPlayer(name) {
+            selected = selected === name ? null : name;   // click again to close
+            renderBoard();
+            renderProfile();
+            if (selected) $('profile').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function renderProfile() {
+            const box = $('profile');
+            const p = players.find(x => x.name === selected);
+            if (!p) { box.hidden = true; return; }
+            box.hidden = false;
+            $('profile-name').textContent = p.name;
+            $('profile-meta').textContent =
+                `Combat ${p.combat} · Total level ${p.totalLevel.toLocaleString()} · ${p.totalXp.toLocaleString()} XP`;
+            const grid = $('profile-grid');
+            grid.innerHTML = '';
+            skills.forEach((name, i) => {
+                const card = document.createElement('div');
+                card.className = 'stat-card' + (i === current ? ' current' : '');
+                card.title = `Rank everyone by ${name}`;
+                card.addEventListener('click', () => {
+                    setSkill(i);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+                card.appendChild(makeIcon(i));
+                card.insertAdjacentHTML('beforeend', `
+                    <div class="skill-name">${name}</div>
+                    <div class="skill-level">${p.levels[i]}</div>
+                    <div class="skill-xp">${p.xp[i].toLocaleString()} XP</div>`);
+                grid.appendChild(card);
+            });
+        }
+
+        async function load() {
+            try {
+                // The query string skips stale browser caches so new uploads show up
+                const r = await fetch(`${DATA_URL}?t=${Date.now()}`);
+                if (!r.ok) throw new Error('HTTP ' + r.status);
+                const data = await r.json();
+                skills = data.skills;
+                players = data.players;
+                $('status').textContent =
+                    `${players.length} players · updated ${new Date(data.generated).toLocaleString()}`;
+                buildPicker();
+                setSkill(current);
+            } catch (e) {
+                $('status').textContent = e.message === 'HTTP 404'
+                    ? 'No highscores published yet: they appear once the server uploads them.'
+                    : 'Couldn’t load highscores (' + e.message + ').';
+            }
+        }
+
+        load();
+        setInterval(load, 5 * 60 * 1000);   // refresh every 5 minutes while the page is open
+    </script>
+
+</body>
+</html>
