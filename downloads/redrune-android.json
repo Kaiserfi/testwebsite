@@ -1,6 +1,6 @@
 {
-  "versionCode": 19,
-  "versionName": "19",
-  "notes": "Checks for updates every 30 minutes. This version is required to log in.",
+  "versionCode": 20,
+  "versionName": "20",
+  "notes": "Camera-Remap toggle in Options, volumes remembered per account.",
   "apk": "https://laidbackcrew.org/downloads/RedRune.apk"
 }
