@@ -1,6 +1,6 @@
 {
-  "versionCode": 8,
-  "versionName": "8",
-  "notes": "Fills the whole screen (no more black bars), the inventory no longer covers the minimap, and you can now hide the minimap: right-click (long-press) the world map button.",
+  "versionCode": 9,
+  "versionName": "9",
+  "notes": "True full screen (uses the whole display), the inventory no longer covers the orbs or world map button on any phone shape, and the keyboard button moved to the top left.",
   "apk": "https://laidbackcrew.org/downloads/RedRune.apk"
 }
