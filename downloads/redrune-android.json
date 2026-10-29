@@ -1,0 +1,6 @@
+{
+  "versionCode": 7,
+  "versionName": "7",
+  "notes": "Bigger interface and tap assist: a tap that just misses a button now hits it. The app now checks for updates when it starts.",
+  "apk": "https://laidbackcrew.org/downloads/RedRune.apk"
+}
