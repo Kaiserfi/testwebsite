@@ -1,6 +1,6 @@
 {
-  "versionCode": 18,
-  "versionName": "18",
-  "notes": "Remember Me: the checkbox works when tapped and shows its tick right away, and saved passwords are encrypted.",
+  "versionCode": 19,
+  "versionName": "19",
+  "notes": "Checks for updates every 30 minutes. This version is required to log in.",
   "apk": "https://laidbackcrew.org/downloads/RedRune.apk"
 }
