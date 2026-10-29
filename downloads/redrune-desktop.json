@@ -1,4 +1,4 @@
 {
-  "revision": 4,
-  "notes": "Camera-Remap (Options tab) now works on PC: Press Enter to Chat, and W A S D turn the camera while the chat is closed."
+  "revision": 5,
+  "notes": "The client now connects to the new RedRune server in Los Angeles instead of the old tunnel, so the game should feel smoother."
 }
