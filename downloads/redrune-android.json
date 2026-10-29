@@ -1,6 +1,6 @@
 {
-  "versionCode": 20,
-  "versionName": "20",
-  "notes": "Camera-Remap toggle in Options, volumes remembered per account.",
+  "versionCode": 21,
+  "versionName": "21",
+  "notes": "Fixes being stuck at 'Checking for updates - 0%' on some networks (IPv6).",
   "apk": "https://laidbackcrew.org/downloads/RedRune.apk"
 }
