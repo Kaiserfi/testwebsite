@@ -1,6 +1,6 @@
 {
-  "versionCode": 7,
-  "versionName": "7",
-  "notes": "Bigger interface and tap assist: a tap that just misses a button now hits it. The app now checks for updates when it starts.",
+  "versionCode": 8,
+  "versionName": "8",
+  "notes": "Fills the whole screen (no more black bars), the inventory no longer covers the minimap, and you can now hide the minimap: right-click (long-press) the world map button.",
   "apk": "https://laidbackcrew.org/downloads/RedRune.apk"
 }
