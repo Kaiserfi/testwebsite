@@ -1,6 +1,6 @@
 {
-  "versionCode": 13,
-  "versionName": "13",
-  "notes": "Sound fix: Android was waiting for a full buffer before playing and the game never filled it. Still has the test beep and [Sound] lines.",
+  "versionCode": 14,
+  "versionName": "14",
+  "notes": "Fixes the slowdown from the sound fix: sound no longer makes the game wait. Test beep and [Sound] lines removed.",
   "apk": "https://laidbackcrew.org/downloads/RedRune.apk"
 }
