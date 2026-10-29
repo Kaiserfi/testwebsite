@@ -1,6 +1,6 @@
 {
-  "versionCode": 23,
-  "versionName": "23",
-  "notes": "The app now connects to the new RedRune server in Los Angeles instead of the old tunnel, so the game should feel smoother.",
+  "versionCode": 24,
+  "versionName": "24",
+  "notes": "Fixes version 23 starting to a black screen.",
   "apk": "https://laidbackcrew.org/downloads/RedRune.apk"
 }
