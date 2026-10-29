@@ -1,6 +1,6 @@
 {
-  "versionCode": 17,
-  "versionName": "17",
-  "notes": "Minimap hidden: orbs in a straight column on the right edge, world map button in the top row.",
+  "versionCode": 18,
+  "versionName": "18",
+  "notes": "Remember Me: the checkbox works when tapped and shows its tick right away, and saved passwords are encrypted.",
   "apk": "https://laidbackcrew.org/downloads/RedRune.apk"
 }
