@@ -1,6 +1,6 @@
 {
-  "versionCode": 21,
-  "versionName": "21",
-  "notes": "Fixes being stuck at 'Checking for updates - 0%' on some networks (IPv6).",
+  "versionCode": 22,
+  "versionName": "22",
+  "notes": "Downloads the game files from the website the first time (fast anywhere), instead of through the server.",
   "apk": "https://laidbackcrew.org/downloads/RedRune.apk"
 }
