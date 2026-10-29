@@ -1,4 +1,4 @@
 {
-  "revision": 3,
-  "notes": "The client now keeps trying to connect while the server is starting, instead of getting stuck at 0%."
+  "revision": 4,
+  "notes": "Camera-Remap (Options tab) now works on PC: Press Enter to Chat, and W A S D turn the camera while the chat is closed."
 }
