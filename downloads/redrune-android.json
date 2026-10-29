@@ -1,6 +1,6 @@
 {
-  "versionCode": 15,
-  "versionName": "15",
-  "notes": "Your sound sliders are remembered after closing the app, and no more 'Unsupported Java' warning.",
+  "versionCode": 16,
+  "versionName": "16",
+  "notes": "Logout X no longer cut off in the corner; with the minimap hidden the orbs move against the right edge.",
   "apk": "https://laidbackcrew.org/downloads/RedRune.apk"
 }
