@@ -1,3 +1,4 @@
 {
-  "revision": 2
+  "revision": 3,
+  "notes": "The client now keeps trying to connect while the server is starting, instead of getting stuck at 0%."
 }
