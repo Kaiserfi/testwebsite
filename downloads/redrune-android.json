@@ -1,6 +1,6 @@
 {
-  "versionCode": 12,
-  "versionName": "12",
-  "notes": "Fixes phone-only features switching off since version 10 (battery saving, tap assist, hide minimap, sound repair). Still has the test beep and orange [Sound] lines while we track down sound.",
+  "versionCode": 13,
+  "versionName": "13",
+  "notes": "Sound fix: Android was waiting for a full buffer before playing and the game never filled it. Still has the test beep and [Sound] lines.",
   "apk": "https://laidbackcrew.org/downloads/RedRune.apk"
 }
