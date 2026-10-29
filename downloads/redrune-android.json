@@ -1,6 +1,6 @@
 {
-  "versionCode": 9,
-  "versionName": "9",
-  "notes": "True full screen (uses the whole display), the inventory no longer covers the orbs or world map button on any phone shape, and the keyboard button moved to the top left.",
+  "versionCode": 10,
+  "versionName": "10",
+  "notes": "Sound and music now work. Easier on the battery: lower frame rate, lower still in Battery Saver, and no drawing or sound in the background. The friends list keeps showing the total players online.",
   "apk": "https://laidbackcrew.org/downloads/RedRune.apk"
 }
