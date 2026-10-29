@@ -1,6 +1,6 @@
 {
-  "versionCode": 16,
-  "versionName": "16",
-  "notes": "Logout X no longer cut off in the corner; with the minimap hidden the orbs move against the right edge.",
+  "versionCode": 17,
+  "versionName": "17",
+  "notes": "Minimap hidden: orbs in a straight column on the right edge, world map button in the top row.",
   "apk": "https://laidbackcrew.org/downloads/RedRune.apk"
 }
