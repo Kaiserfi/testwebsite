@@ -1,6 +1,6 @@
 {
-  "versionCode": 10,
-  "versionName": "10",
-  "notes": "Sound and music now work. Easier on the battery: lower frame rate, lower still in Battery Saver, and no drawing or sound in the background. The friends list keeps showing the total players online.",
+  "versionCode": 11,
+  "versionName": "11",
+  "notes": "Sound fix: the game was muting itself at login (for old 727 video adverts) and never turning back on. Sound is back on, with a short test beep when the app opens for now.",
   "apk": "https://laidbackcrew.org/downloads/RedRune.apk"
 }
