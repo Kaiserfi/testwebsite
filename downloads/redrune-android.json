@@ -1,6 +1,6 @@
 {
-  "versionCode": 11,
-  "versionName": "11",
-  "notes": "Sound fix: the game was muting itself at login (for old 727 video adverts) and never turning back on. Sound is back on, with a short test beep when the app opens for now.",
+  "versionCode": 12,
+  "versionName": "12",
+  "notes": "Fixes phone-only features switching off since version 10 (battery saving, tap assist, hide minimap, sound repair). Still has the test beep and orange [Sound] lines while we track down sound.",
   "apk": "https://laidbackcrew.org/downloads/RedRune.apk"
 }
