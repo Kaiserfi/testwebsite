@@ -1,6 +1,6 @@
 {
-  "versionCode": 29,
-  "versionName": "29",
-  "notes": "The graphics auto setup / first time prompt no longer appears on the phone.",
+  "versionCode": 30,
+  "versionName": "30",
+  "notes": "Test build: errors the game hits are shown in the chat as [Error] lines, to find why the world stays black.",
   "apk": "https://laidbackcrew.org/downloads/RedRune.apk"
 }
