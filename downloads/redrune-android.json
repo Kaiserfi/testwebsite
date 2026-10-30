@@ -1,6 +1,6 @@
 {
-  "versionCode": 26,
-  "versionName": "26",
-  "notes": "House portals now have Enter, Enter Build Mode and Enter friend's house.",
+  "versionCode": 27,
+  "versionName": "27",
+  "notes": "Fixed the app crashing when tapping a button on the login screen.",
   "apk": "https://laidbackcrew.org/downloads/RedRune.apk"
 }
