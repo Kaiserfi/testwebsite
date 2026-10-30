@@ -1,4 +1,4 @@
 {
-  "revision": 6,
-  "notes": "Fixes typing on the login screen: W, A, S and D went to the camera instead of the username and password boxes."
+  "revision": 7,
+  "notes": "Hold Alt and drag the potion boost boxes to move them anywhere on screen. Alt + right-click on them puts them back."
 }
