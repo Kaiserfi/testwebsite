@@ -1,6 +1,6 @@
 {
-  "versionCode": 28,
-  "versionName": "28",
-  "notes": "Fixed the graphics auto setup prompt appearing on every launch, which could leave the game stuck at 100% with a black screen.",
+  "versionCode": 29,
+  "versionName": "29",
+  "notes": "The graphics auto setup / first time prompt no longer appears on the phone.",
   "apk": "https://laidbackcrew.org/downloads/RedRune.apk"
 }
