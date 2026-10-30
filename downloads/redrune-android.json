@@ -1,6 +1,6 @@
 {
-  "versionCode": 33,
-  "versionName": "33",
-  "notes": "Test build: sound debug lines appear in the chat after login, to find why attack sounds are silent.",
+  "versionCode": 32,
+  "versionName": "32",
+  "notes": "Test build: a red panel at the bottom shows errors the game hits, even before login, to find why loading gets stuck.",
   "apk": "https://laidbackcrew.org/downloads/RedRune.apk"
 }
