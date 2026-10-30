@@ -1,4 +1,4 @@
 {
-  "revision": 5,
-  "notes": "The client now connects to the new RedRune server in Los Angeles instead of the old tunnel, so the game should feel smoother."
+  "revision": 6,
+  "notes": "Fixes typing on the login screen: W, A, S and D went to the camera instead of the username and password boxes."
 }
