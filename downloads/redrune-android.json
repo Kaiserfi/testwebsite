@@ -1,6 +1,6 @@
 {
-  "versionCode": 24,
-  "versionName": "24",
-  "notes": "Fixes version 23 starting to a black screen.",
+  "versionCode": 25,
+  "versionName": "25",
+  "notes": "The floating yellow compass markers are gone.",
   "apk": "https://laidbackcrew.org/downloads/RedRune.apk"
 }
