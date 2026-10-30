@@ -1,6 +1,6 @@
 {
-  "versionCode": 31,
-  "versionName": "31",
-  "notes": "Fixes the freeze on Play in the previous test build; errors are still shown in the chat as [Error] lines.",
+  "versionCode": 32,
+  "versionName": "32",
+  "notes": "Test build: a red panel at the bottom shows errors the game hits, even before login, to find why loading gets stuck.",
   "apk": "https://laidbackcrew.org/downloads/RedRune.apk"
 }
