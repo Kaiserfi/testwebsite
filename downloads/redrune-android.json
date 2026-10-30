@@ -1,6 +1,6 @@
 {
-  "versionCode": 30,
-  "versionName": "30",
-  "notes": "Test build: errors the game hits are shown in the chat as [Error] lines, to find why the world stays black.",
+  "versionCode": 31,
+  "versionName": "31",
+  "notes": "Fixes the freeze on Play in the previous test build; errors are still shown in the chat as [Error] lines.",
   "apk": "https://laidbackcrew.org/downloads/RedRune.apk"
 }
