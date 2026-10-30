@@ -1,4 +1,4 @@
 {
-  "revision": 7,
-  "notes": "Hold Alt and drag the potion boost boxes to move them anywhere on screen. Alt + right-click on them puts them back."
+  "revision": 8,
+  "notes": "The window title now shows the client revision, and the minimise, maximise and close buttons are slimmer and sharper."
 }
