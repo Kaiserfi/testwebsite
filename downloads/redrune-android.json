@@ -1,6 +1,6 @@
 {
-  "versionCode": 27,
-  "versionName": "27",
-  "notes": "Fixed the app crashing when tapping a button on the login screen.",
+  "versionCode": 28,
+  "versionName": "28",
+  "notes": "Fixed the graphics auto setup prompt appearing on every launch, which could leave the game stuck at 100% with a black screen.",
   "apk": "https://laidbackcrew.org/downloads/RedRune.apk"
 }
