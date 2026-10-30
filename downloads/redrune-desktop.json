@@ -1,4 +1,4 @@
 {
-  "revision": 8,
-  "notes": "The window title now shows the client revision, and the minimise, maximise and close buttons are slimmer and sharper."
+  "revision": 9,
+  "notes": "The floating yellow compass markers are gone."
 }
