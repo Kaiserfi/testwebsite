@@ -1,6 +1,6 @@
 {
-  "versionCode": 32,
-  "versionName": "32",
-  "notes": "Test build: a red panel at the bottom shows errors the game hits, even before login, to find why loading gets stuck.",
+  "versionCode": 27,
+  "versionName": "27",
+  "notes": "Updated to the latest client: furniture number keys, shop Buy X, House Options look",
   "apk": "https://laidbackcrew.org/downloads/RedRune.apk"
 }
