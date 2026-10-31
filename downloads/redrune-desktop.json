@@ -1,4 +1,4 @@
 {
-  "revision": 14,
-  "notes": "House Options tab: buttons match the rest of the interface in both layouts"
+  "revision": 15,
+  "notes": "House Options tab: wide buttons now stretch to their full width in the resizable layout"
 }
