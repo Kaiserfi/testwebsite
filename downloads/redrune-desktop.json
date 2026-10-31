@@ -1,4 +1,4 @@
 {
-  "revision": 15,
-  "notes": "House Options tab: wide buttons now stretch to their full width in the resizable layout"
+  "revision": 16,
+  "notes": "House Options buttons no longer flicker back to the old look"
 }
