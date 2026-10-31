@@ -1,4 +1,4 @@
 {
-  "revision": 11,
-  "notes": "Shop: the first option on each item now says Buy X"
+  "revision": 12,
+  "notes": "Shop: Info is back as the first option, Buy X is the last buy option"
 }
