@@ -1,6 +1,6 @@
 {
-  "versionCode": 30,
-  "versionName": "30",
-  "notes": "Crash reporting: if the app crashes it now shows the error at the next start",
+  "versionCode": 31,
+  "versionName": "31",
+  "notes": "Shows client errors on screen to find the setup problem",
   "apk": "https://laidbackcrew.org/downloads/RedRune.apk"
 }
