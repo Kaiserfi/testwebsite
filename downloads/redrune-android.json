@@ -1,6 +1,6 @@
 {
-  "versionCode": 33,
-  "versionName": "33",
-  "notes": "Fixes tap crash (app 32) and checks the build for missing shim methods",
+  "versionCode": 34,
+  "versionName": "34",
+  "notes": "Developer console: typing no longer turns the camera",
   "apk": "https://laidbackcrew.org/downloads/RedRune.apk"
 }
