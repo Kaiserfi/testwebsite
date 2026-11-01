@@ -153,6 +153,13 @@
             border-bottom: 1px solid #330000;
         }
 
+        .sort-btn {
+            background: none; border: 0; padding: 0; margin: 0;
+            font: inherit; color: inherit; text-transform: inherit; letter-spacing: inherit;
+            cursor: pointer; width: 100%; text-align: right;
+        }
+        .sort-btn:hover, .sort-btn.active { color: #ff4d4d; }
+
         .board-row {
             background: #151515;
             border-bottom: 1px solid #221010;
@@ -425,8 +432,8 @@
             <div class="board-head">
                 <div style="text-align:center">#</div>
                 <div>Player</div>
-                <div class="num">Level</div>
-                <div class="num">XP</div>
+                <div class="num"><button type="button" class="sort-btn" id="sort-level">Level</button></div>
+                <div class="num"><button type="button" class="sort-btn" id="sort-xp">XP</button></div>
             </div>
             <div id="board-rows"></div>
         </div>
@@ -508,14 +515,47 @@
             renderProfile();
         }
 
+        // Sorting: click Level or XP; click again to flip ascending/descending.
+        let sortKey = 'xp';
+        let sortDir = -1;         // -1 = highest first, 1 = lowest first
+
+        function setSort(key) {
+            if (sortKey === key) sortDir = -sortDir;
+            else { sortKey = key; sortDir = -1; }
+            renderBoard();
+        }
+
+        function updateSortButtons() {
+            for (const key of ['level', 'xp']) {
+                const btn = $('sort-' + key);
+                const on = sortKey === key;
+                btn.classList.toggle('active', on);
+                btn.textContent = (key === 'xp' ? 'XP' : 'Level') + (on ? (sortDir < 0 ? ' ▼' : ' ▲') : '');
+            }
+        }
+
         function renderBoard() {
             const rowsEl = $('board-rows');
             rowsEl.innerHTML = '';
-            const ranked = players.slice().sort((a, b) =>
-                statOf(b, current).xp - statOf(a, current).xp || statOf(b, current).level - statOf(a, current).level);
+            updateSortButtons();
+            const byXp = (a, b) =>
+                statOf(b, current).xp - statOf(a, current).xp || statOf(b, current).level - statOf(a, current).level;
+            // The # column is always the true rank by XP, even when sorted another way.
+            const rankOf = new Map();
+            const ranked = players.slice().sort(byXp);
+            ranked.forEach((p, i) => rankOf.set(p, i));
             const topXp = ranked.length ? statOf(ranked[0], current).xp : 0;
 
-            ranked.forEach((p, i) => {
+            const shown = players.slice().sort((a, b) => {
+                const sa = statOf(a, current), sb = statOf(b, current);
+                const d = sortKey === 'level'
+                    ? (sa.level - sb.level) || (sa.xp - sb.xp)
+                    : (sa.xp - sb.xp) || (sa.level - sb.level);
+                return (d * sortDir) || (rankOf.get(a) - rankOf.get(b));
+            });
+
+            shown.forEach(p => {
+                const i = rankOf.get(p);
                 const s = statOf(p, current);
                 const row = document.createElement('div');
                 row.className = 'board-row' + (p.name === selected ? ' selected' : '');
@@ -571,6 +611,9 @@
                 rowsEl.appendChild(row);
             });
         }
+
+        $('sort-level').addEventListener('click', () => setSort('level'));
+        $('sort-xp').addEventListener('click', () => setSort('xp'));
 
         function selectPlayer(name) {
             selected = selected === name ? null : name;   // click again to close
