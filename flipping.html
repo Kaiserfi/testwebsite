@@ -139,6 +139,9 @@
         <button class="tab" role="tab" data-win="h1" aria-selected="true">1 hour</button>
         <button class="tab" role="tab" data-win="h12" aria-selected="false">12 hours</button>
         <button class="tab" role="tab" data-win="h24" aria-selected="false">24 hours</button>
+        <button class="tab" role="tab" data-win="d3" aria-selected="false" hidden>3 days</button>
+        <button class="tab" role="tab" data-win="d7" aria-selected="false" hidden>7 days</button>
+        <button class="tab" role="tab" data-win="all" aria-selected="false" hidden>All time</button>
         <select id="me" aria-label="Highlight me"><option value="">Highlight me...</option></select>
     </div>
     <div class="reset" id="reset"></div>
@@ -171,7 +174,10 @@
     const WORKER_URL = 'https://flip-leaderboard.kaiserfi918.workers.dev';
     // =================================================================
 
-    const LABELS = { h1: 'hour', h12: '12 hours', h24: '24 hours' };
+    const LABELS = { h1: 'hour', h12: '12 hours', h24: '24 hours', d3: '3 days', d7: '7 days', all: 'all time' };
+    // Wording for the empty boards and the line under the tabs
+    const EMPTY = { h1: 'this hour', h12: 'this 12 hours', h24: 'this 24 hours', d3: 'in the last 3 days', d7: 'in the last 7 days', all: 'yet' };
+    const ET_DATE = t => new Date(t * 1000).toLocaleDateString('en-US', { timeZone: 'America/New_York', month: 'short', day: 'numeric' });
     // Tier badge from a player's profit over the last 24 hours (no badge until they're in profit)
     const TIERS = [[50e6, 'Dragon'], [30e6, 'Rune'], [20e6, 'Adamant'], [15e6, 'Mithril'], [10e6, 'Black'],
         [7.5e6, 'Steel'], [5e6, 'Iron'], [1, 'Bronze']];
@@ -203,7 +209,7 @@
 
     function list(el, rows, value, opts) {
         if (!rows.length) {
-            el.innerHTML = `<div class="empty">${opts.empty || `No flips this ${LABELS[win]} yet.`}</div>`;
+            el.innerHTML = `<div class="empty">${opts.empty || (win === 'all' ? 'No flips yet.' : `No flips ${EMPTY[win]}${win.startsWith('h') ? ' yet' : ''}.`)}</div>`;
             return;
         }
         const max = Math.max(...rows.map(r => Math.abs(value(r)))) || 1;
@@ -227,10 +233,16 @@
     function render() {
         if (!data) return;
         const w = data.windows[win];
-        const left = Math.max(0, w.end - Math.floor(Date.now() / 1000));
-        const h = Math.floor(left / 3600), m = Math.floor((left % 3600) / 60), s = left % 60;
-        document.getElementById('reset').innerHTML =
-            `This ${LABELS[win]} started ${et(w.start)} ET &middot; resets in <b>${h ? h + 'h ' : ''}${m}m ${String(s).padStart(2, '0')}s</b>`;
+        if (w.end == null) { // 3 days, 7 days and all time never reset: no countdown
+            document.getElementById('reset').innerHTML = win === 'all'
+                ? `Everything since <b>${ET_DATE(w.start)}</b> ET &middot; adds up every day`
+                : `The last ${LABELS[win]}: <b>${ET_DATE(w.start)}</b> ET until now &middot; the oldest day drops off at midnight ET`;
+        } else {
+            const left = Math.max(0, w.end - Math.floor(Date.now() / 1000));
+            const h = Math.floor(left / 3600), m = Math.floor((left % 3600) / 60), s = left % 60;
+            document.getElementById('reset').innerHTML =
+                `This ${LABELS[win]} started ${et(w.start)} ET &middot; resets in <b>${h ? h + 'h ' : ''}${m}m ${String(s).padStart(2, '0')}s</b>`;
+        }
 
         const cur = w.current.slice();
         const green = 'var(--green)', red = 'var(--red)';
@@ -241,10 +253,10 @@
         list(document.getElementById('best'), cur.filter(r => r.best != null).sort((a, b) => b.best - a.best), r => r.best,
             { fmt: gp, cls: v => v >= 0 ? 'pos' : 'neg', color: v => v >= 0 ? green : red, sub: r => r.bestItem });
         list(document.getElementById('worst'), cur.filter(r => r.worst != null && r.worst < 0).sort((a, b) => a.worst - b.worst), r => r.worst,
-            { fmt: gp, cls: () => 'neg', color: () => red, sub: r => r.worstItem, empty: `No losing flips this ${LABELS[win]}.` });
+            { fmt: gp, cls: () => 'neg', color: () => red, sub: r => r.worstItem, empty: win === 'all' ? 'No losing flips yet.' : `No losing flips ${EMPTY[win]}.` });
 
         const prev = w.previous && w.previous.slice().sort((a, b) => b.profit - a.profit)[0];
-        document.getElementById('previous').innerHTML = prev
+        document.getElementById('previous').innerHTML = w.end == null ? '' : prev
             ? `Last ${LABELS[win]} (${et(w.previousStart)} ET): <b>${esc(prev.name)}</b> won with ${gp(prev.profit)}` : '';
 
         // "Highlight me" choices: everyone on the 24h board
@@ -259,6 +271,9 @@
             const r = await fetch(WORKER_URL + '/leaderboard', { cache: 'no-store' });
             if (!r.ok) throw new Error(r.status);
             data = await r.json();
+            // 3 days / 7 days / all time tabs show up as soon as the Worker sends those boards
+            document.querySelectorAll('.tab').forEach(t => { t.hidden = !data.windows[t.dataset.win]; });
+            if (!data.windows[win]) win = 'h1';
             document.getElementById('status').textContent = 'Updated ' + new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
             render();
         } catch (e) {
@@ -280,7 +295,7 @@
     load();
     setInterval(load, 60000);
     setInterval(() => {
-        if (data && Math.floor(Date.now() / 1000) >= data.windows[win].end) load();
+        if (data && data.windows[win].end != null && Math.floor(Date.now() / 1000) >= data.windows[win].end) load();
         render();
     }, 1000);
 </script>
