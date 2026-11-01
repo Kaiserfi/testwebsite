@@ -28,14 +28,14 @@ How it works:
 - The Flip Ledger plugin (each friend's RuneLite) POSTs its player's current 1 hour / 12 hour / 24 hour results to the Worker (`POST /submit`, needs the crew key in `X-Group-Key` and the player's own token in `X-Player-Token`; a name is claimed by whoever submits it first).
 - The Worker `https://flip-leaderboard.kaiserfi918.workers.dev` keeps them in a D1 database (binding `DB`, secret `GROUP_KEY`). Windows reset on Eastern time (the `h24` window is one Eastern day).
 - `GET /leaderboard` (public, `Cache-Control: max-age=30`) returns `{now, windows: {h1, h12, h24, d3, d7, all}}`. Each window: `start`, `end` (null for d3/d7/all: they never reset), `current` (up to 50 players: `name, profit, flips, updated, best, bestItem, worst, worstItem`), `previousStart`, `previous`.
-- **3 days, 7 days and all time (added 3 Nov 2026)** are not stored: the Worker adds up the `h24` rows (one per player per Eastern day). 3 days = today and the 2 days before, 7 days = today and the 6 before, all time = every day kept. Profit and flips are summed, best flip / worst loss are the biggest of any day, names that differ only by case are merged. The 1h/12h rows are deleted after 3 days; **`h24` rows are kept forever** (before 3 Nov 2026 they were deleted after 3 days, so the 7 day and all time boards fill in from that date).
-- The page shows the extra tabs only when the Worker returns those windows (so page and Worker can be deployed in either order), shows no reset countdown for them, and the tier badges (Bronze 1+, Iron 5M, Steel 7.5M, Black 10M, Mithril 15M, Adamant 20M, Rune 30M, Dragon 50M) are based on **all-time profit** (owner's decision, 3 Nov 2026; they used to use the 24h board), falling back to the 24h board if the Worker has no `all` window. The all-time total only counts days the Worker has kept (see above), and the thresholds were first chosen for a single day, so they may need raising later.
+- **3 days, 7 days and all time (added 1 Nov 2026)** are not stored: the Worker adds up the `h24` rows (one per player per Eastern day). 3 days = today and the 2 days before, 7 days = today and the 6 before, all time = every day kept. Profit and flips are summed, best flip / worst loss are the biggest of any day, names that differ only by case are merged. The 1h/12h rows are deleted after 3 days; **`h24` rows are kept forever** (before 1 Nov 2026 they were deleted after 3 days, so the 7 day and all time boards fill in from that date).
+- The page shows the extra tabs only when the Worker returns those windows (so page and Worker can be deployed in either order), shows no reset countdown for them, and the tier badges (Bronze 1+, Iron 5M, Steel 7.5M, Black 10M, Mithril 15M, Adamant 20M, Rune 30M, Dragon 50M) are based on **all-time profit** (owner's decision, 1 Nov 2026; they used to use the 24h board), falling back to the 24h board if the Worker has no `all` window. The all-time total only counts days the Worker has kept (see above), and the thresholds were first chosen for a single day, so they may need raising later.
 
 The Worker's source is `worker/worker.js` (a copy of what is deployed; keep it in step). It was originally edited in the Cloudflare dashboard, which is impractical on a phone, so changes are made here and deployed through the API.
 
 ### Deploying the Worker from a cloud session
 
-1. The owner creates an API token (Cloudflare dashboard, profile, API Tokens, template "Edit Cloudflare Workers", limited to their account) and adds it to the Claude environment as the secret/variable `CLOUDFLARE_API_TOKEN` (**never ask them to paste it in chat**; on 3 Nov 2026 they pasted one in chat anyway, I used it once and told them to delete it). Ask them to delete or roll it when done.
+1. The owner creates an API token (Cloudflare dashboard, profile, API Tokens, template "Edit Cloudflare Workers", limited to their account) and adds it to the Claude environment as the secret/variable `CLOUDFLARE_API_TOKEN` (**never ask them to paste it in chat**; on 1 Nov 2026 they pasted one in chat anyway, I used it once and told them to delete it). Ask them to delete or roll it when done.
 2. `api.cloudflare.com` is reachable from a cloud session. The account id comes from `GET /accounts` with the token; the Worker is `flip-leaderboard`.
 3. Upload (keeps the D1 binding and the secret; `compatibility_date` was `2026-10-27`):
    ```
@@ -45,6 +45,16 @@ The Worker's source is `worker/worker.js` (a copy of what is deployed; keep it i
    ```
 4. Check `GET /leaderboard` afterwards, and `GET /accounts/<id>/workers/scripts/flip-leaderboard/settings` to confirm the bindings `DB` (d1) and `GROUP_KEY` (secret_text) are still there. The previous code can be read back from `/workers/scripts/flip-leaderboard/content/v2` before overwriting (save it first).
 5. Test changes to the Worker with a fake `env.DB` in Node before deploying (the aggregation is a pure function, `periodWindow`), and the page with Playwright and a mocked `/leaderboard` response.
+
+## RedRune highscores (`redrune.html`, `redrune-highscores.json`)
+
+Written by the game server on the VPS (`HighscoresPublisher` in redrune-server), which uploads the file here through GitHub's Contents API every 10 minutes when the rankings changed. That needs `data/highscores-github-token.txt` on the VPS (a fine-grained token with Contents read/write on this repo; not in git; the owner created it on 1 Nov 2026 and the page updated; it was exposed in chat once, so the owner was told to regenerate it). Each "Update RedRune highscores" commit in this repo's history is that upload. Administrator accounts are left off and names show as in game (both in the server code, deployed by the owner); individual accounts can be hidden with `data/highscores-hidden.txt` on the VPS. Never edit the JSON by hand.
+
+## State at the end of the 1 Nov 2026 session
+
+- Flipping: 3 day / 7 day / all time tabs are live (Worker deployed through the Cloudflare API; the Worker source copy is `worker/worker.js`). Ranks are all-time based (0srsn0ob showed Iron at 7.35M). The thresholds were chosen for one day and may need raising once more history exists; the owner has not chosen new numbers.
+- The real date was 1 Nov 2026 (earlier notes elsewhere said 2-3 Nov by mistake).
+- The Cloudflare token the owner pasted in chat should be deleted by them; for future Worker deploys they add a fresh one as `CLOUDFLARE_API_TOKEN` in the environment settings.
 
 ## Gotchas
 
