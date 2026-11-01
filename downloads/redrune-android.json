@@ -1,6 +1,6 @@
 {
-  "versionCode": 28,
-  "versionName": "28",
-  "notes": "Fairy ring dials turn twice as fast",
+  "versionCode": 29,
+  "versionName": "29",
+  "notes": "Fairy ring dials: every click turns the dial",
   "apk": "https://laidbackcrew.org/downloads/RedRune.apk"
 }
