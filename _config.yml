@@ -1,0 +1,4 @@
+# GitHub Pages: keep the notes and the Worker source out of the public site
+exclude:
+  - CLAUDE.md
+  - worker
