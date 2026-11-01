@@ -1,6 +1,6 @@
 {
-  "versionCode": 29,
-  "versionName": "29",
-  "notes": "Fairy ring dials: every click turns the dial",
+  "versionCode": 30,
+  "versionName": "30",
+  "notes": "Crash reporting: if the app crashes it now shows the error at the next start",
   "apk": "https://laidbackcrew.org/downloads/RedRune.apk"
 }
