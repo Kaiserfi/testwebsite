@@ -178,7 +178,7 @@
     // Wording for the empty boards and the line under the tabs
     const EMPTY = { h1: 'this hour', h12: 'this 12 hours', h24: 'this 24 hours', d3: 'in the last 3 days', d7: 'in the last 7 days', all: 'yet' };
     const ET_DATE = t => new Date(t * 1000).toLocaleDateString('en-US', { timeZone: 'America/New_York', month: 'short', day: 'numeric' });
-    // Tier badge from a player's profit over the last 24 hours (no badge until they're in profit)
+    // Tier badge from a player's all-time profit (no badge until they're in profit)
     const TIERS = [[50e6, 'Dragon'], [30e6, 'Rune'], [20e6, 'Adamant'], [15e6, 'Mithril'], [10e6, 'Black'],
         [7.5e6, 'Steel'], [5e6, 'Iron'], [1, 'Bronze']];
     let data = null, win = 'h1';
@@ -198,12 +198,14 @@
     const et = t => new Date(t * 1000).toLocaleTimeString('en-US', { timeZone: 'America/New_York', hour: 'numeric', minute: '2-digit' });
 
     function tierOf(name) {
-        const day = data && data.windows.h24.current.find(p => canon(p.name) === canon(name));
-        const p = day ? day.profit : 0;
+        // all-time board; an older Worker without it falls back to the 24 hour board
+        const board = data && (data.windows.all || data.windows.h24);
+        const row = board && board.current.find(p => canon(p.name) === canon(name));
+        const p = row ? row.profit : 0;
         const t = TIERS.find(([min]) => p >= min);
         if (!t) return '';
         const next = TIERS[TIERS.indexOf(t) - 1];
-        const tip = `${t[1]} flipper: ${gp(p)} in the last 24 hours` + (next ? ` (${next[1]} at ${gp(next[0], false)})` : '');
+        const tip = `${t[1]} flipper: ${gp(p)} ${data.windows.all ? 'all time' : 'in the last 24 hours'}` + (next ? ` (${next[1]} at ${gp(next[0], false)})` : '');
         return `<span class="pill t-${t[1].toLowerCase()}" title="${esc(tip)}">${t[1]}</span>`;
     }
 
@@ -259,9 +261,9 @@
         document.getElementById('previous').innerHTML = w.end == null ? '' : prev
             ? `Last ${LABELS[win]} (${et(w.previousStart)} ET): <b>${esc(prev.name)}</b> won with ${gp(prev.profit)}` : '';
 
-        // "Highlight me" choices: everyone on the 24h board
+        // "Highlight me" choices: everyone on the all-time board (24h board on an older Worker)
         const sel = document.getElementById('me');
-        const names = data.windows.h24.current.map(p => p.name).sort((a, b) => a.localeCompare(b));
+        const names = (data.windows.all || data.windows.h24).current.map(p => p.name).sort((a, b) => a.localeCompare(b));
         const want = ['<option value="">Highlight me...</option>'].concat(names.map(n => `<option${canon(n) === canon(me) ? ' selected' : ''}>${esc(n)}</option>`)).join('');
         if (sel.innerHTML !== want) sel.innerHTML = want;
     }
