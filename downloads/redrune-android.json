@@ -1,6 +1,6 @@
 {
-  "versionCode": 31,
-  "versionName": "31",
-  "notes": "Shows client errors on screen to find the setup problem",
+  "versionCode": 32,
+  "versionName": "32",
+  "notes": "Fixes the crash when tapping on the login screen and in menus",
   "apk": "https://laidbackcrew.org/downloads/RedRune.apk"
 }
