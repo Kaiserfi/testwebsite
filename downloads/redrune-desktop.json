@@ -1,4 +1,4 @@
 {
-  "revision": 19,
-  "notes": "Developer console: typing no longer turns the camera"
+  "revision": 20,
+  "notes": "Lobby login (optional, off by default)"
 }
