@@ -1,6 +1,6 @@
 {
-  "versionCode": 34,
-  "versionName": "34",
-  "notes": "Developer console: typing no longer turns the camera",
+  "versionCode": 35,
+  "versionName": "35",
+  "notes": "Lobby login (optional, off by default)",
   "apk": "https://laidbackcrew.org/downloads/RedRune.apk"
 }
