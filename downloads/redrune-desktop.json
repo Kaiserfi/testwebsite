@@ -1,4 +1,4 @@
 {
-  "revision": 23,
-  "notes": "Lobby (world select) is now on by default"
+  "revision": 24,
+  "notes": "World 2 support (worlds use their own port)"
 }
