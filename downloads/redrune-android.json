@@ -1,6 +1,6 @@
 {
-  "versionCode": 35,
-  "versionName": "35",
-  "notes": "Lobby login (optional, off by default)",
+  "versionCode": 36,
+  "versionName": "36",
+  "notes": "Matches PC revision 21",
   "apk": "https://laidbackcrew.org/downloads/RedRune.apk"
 }
