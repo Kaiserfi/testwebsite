@@ -1,4 +1,4 @@
 {
-  "revision": 24,
-  "notes": "World 2 support (worlds use their own port)"
+  "revision": 25,
+  "notes": "Fixes a harmless lobby error message on phones"
 }
