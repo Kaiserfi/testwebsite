@@ -95,6 +95,26 @@
             font-size: 0.9rem;
         }
 
+        .world-tabs {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 0 auto 16px;
+        }
+        .world-tab {
+            background: #151515;
+            color: #bbb;
+            border: 1px solid #330000;
+            border-radius: 6px;
+            padding: 8px 16px;
+            font: inherit;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+        .world-tab:hover { border-color: #ff3333; color: #fff; }
+        .world-tab.active { background: #3a0000; border-color: #ff3333; color: #fff; font-weight: bold; }
+
         .skill-picker {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(38px, 1fr));
@@ -420,6 +440,7 @@
             </details>
         </section>
 
+        <div class="world-tabs" id="world-tabs"></div>
         <div class="skill-picker" id="skill-picker"></div>
 
         <div class="controls">
@@ -448,7 +469,12 @@
     <script>
         // Rankings come from redrune-highscores.json, which the RedRune server
         // uploads to this repo every 10 minutes (HighscoresPublisher.java).
-        const DATA_URL = 'redrune-highscores.json';
+        // World 1 is the x8 XP world, World 2 the x1 XP world: each has its own characters, so its own board.
+        const WORLDS = [
+            { id: 'x8', label: 'x8 XP · World 1', url: 'redrune-highscores.json' },
+            { id: 'x1', label: 'x1 XP · World 2', url: 'redrune-highscores-w2.json' }
+        ];
+        let world = WORLDS.find(w => w.id === location.hash.slice(1)) || WORLDS[0];
 
         // Icon file for each skill (in the icons folder). null = show a text badge instead.
         const ICONS = {
@@ -652,7 +678,7 @@
         async function load() {
             try {
                 // The query string skips stale browser caches so new uploads show up
-                const r = await fetch(`${DATA_URL}?t=${Date.now()}`);
+                const r = await fetch(`${world.url}?t=${Date.now()}`);
                 if (!r.ok) throw new Error('HTTP ' + r.status);
                 const data = await r.json();
                 skills = data.skills;
@@ -663,11 +689,33 @@
                 setSkill(current);
             } catch (e) {
                 $('status').textContent = e.message === 'HTTP 404'
-                    ? 'No highscores published yet: they appear once the server uploads them.'
+                    ? 'No highscores published yet for this world: they appear once the server uploads them.'
                     : 'Couldn’t load highscores (' + e.message + ').';
             }
         }
 
+        function buildWorldTabs() {
+            const box = $('world-tabs');
+            box.innerHTML = '';
+            WORLDS.forEach(w => {
+                const b = document.createElement('button');
+                b.type = 'button';
+                b.className = 'world-tab' + (w === world ? ' active' : '');
+                b.textContent = w.label;
+                b.addEventListener('click', () => {
+                    if (w === world) return;
+                    world = w;
+                    selected = null;
+                    location.hash = w.id;
+                    $('status').textContent = 'Loading…';
+                    buildWorldTabs();
+                    load();
+                });
+                box.appendChild(b);
+            });
+        }
+
+        buildWorldTabs();
         load();
         setInterval(load, 5 * 60 * 1000);   // refresh every 5 minutes while the page is open
     </script>
