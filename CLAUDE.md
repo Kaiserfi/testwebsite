@@ -56,6 +56,11 @@ Written by the game server on the VPS (`HighscoresPublisher` in redrune-server),
 - The real date was 1 Nov 2026 (earlier notes elsewhere said 2-3 Nov by mistake).
 - The Cloudflare token the owner pasted in chat should be deleted by them; for future Worker deploys they add a fresh one as `CLOUDFLARE_API_TOKEN` in the environment settings.
 
+## Downloads notes (4 Nov 2026)
+
+- `downloads/RedRune-debug.jar` is a **test build, not a release** (no revision bump, no update prompt): the owner downloads it by hand to try client changes before a release (see the client CLAUDE.md, "Release policy"). It is overwritten by whatever was last tested, so do not rely on it. `RedRune.exe` is unsigned and Windows SmartScreen / Defender flags it (a new file every revision); `RedRune.jar` (Java 17+) is the alternative. A "Having trouble?" help section on the download page was offered, not written.
+- The game server (World 1) pushes `redrune-highscores.json` here every 10 minutes, so run `git pull --rebase origin main` before every push from a cloud session or the push is rejected.
+
 ## Gotchas
 
 - The page `flipping.html` must keep working with an older Worker response (missing `d3/d7/all`).
