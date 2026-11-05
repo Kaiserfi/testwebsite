@@ -1,4 +1,4 @@
 {
-  "revision": 26,
-  "notes": "Create Account on the login screen. Highscores link removed."
+  "revision": 27,
+  "notes": "Quick login list, check box and a new login layout. Remember Me only saves logins that work. Fixes for typing in the lobby and the window title bar."
 }
