@@ -1,4 +1,4 @@
 {
-  "revision": 25,
-  "notes": "Fixes a harmless lobby error message on phones"
+  "revision": 26,
+  "notes": "Create Account on the login screen. Highscores link removed."
 }
