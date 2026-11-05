@@ -1,4 +1,4 @@
 {
-  "revision": 27,
-  "notes": "Quick login list, check box and a new login layout. Remember Me only saves logins that work. Fixes for typing in the lobby and the window title bar."
+  "revision": 28,
+  "notes": "Discord shows what you are doing: fighting, training, where you are (towns, dungeons, TzHaar, Fight Caves and Jad), At home, and Chilling in the lobby."
 }
