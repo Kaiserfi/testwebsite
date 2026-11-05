@@ -1,6 +1,6 @@
 {
-  "versionCode": 42,
-  "versionName": "42",
-  "notes": "Matches PC revision 27: quick login list, new login layout, fixes.",
+  "versionCode": 43,
+  "versionName": "43",
+  "notes": "Matches PC revision 28: Discord activity on PC (the app has no Discord).",
   "apk": "https://laidbackcrew.org/downloads/RedRune.apk"
 }
