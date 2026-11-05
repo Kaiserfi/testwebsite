@@ -1,6 +1,6 @@
 {
-  "versionCode": 40,
-  "versionName": "40",
-  "notes": "Matches PC revision 25",
+  "versionCode": 41,
+  "versionName": "41",
+  "notes": "Matches PC revision 26: Create Account on the login screen.",
   "apk": "https://laidbackcrew.org/downloads/RedRune.apk"
 }
