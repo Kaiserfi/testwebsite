@@ -604,7 +604,7 @@
                 nameEl.textContent = p.name;
                 const cb = document.createElement('span');
                 cb.className = 'combat';
-                cb.textContent = `(cb ${p.combat})`;
+                cb.textContent = typeof p.questPoints === 'number' ? `(cb ${p.combat} · QP ${p.questPoints})` : `(cb ${p.combat})`;
                 nameEl.appendChild(cb);
                 const bar = document.createElement('div');
                 bar.className = 'bar';
@@ -655,7 +655,8 @@
             box.hidden = false;
             $('profile-name').textContent = p.name;
             $('profile-meta').textContent =
-                `Combat ${p.combat} · Total level ${p.totalLevel.toLocaleString()} · ${p.totalXp.toLocaleString()} XP`;
+                `Combat ${p.combat} · Total level ${p.totalLevel.toLocaleString()} · ${p.totalXp.toLocaleString()} XP`
+                + (typeof p.questPoints === 'number' ? ` · Quest points ${p.questPoints}` : '');
             const grid = $('profile-grid');
             grid.innerHTML = '';
             skills.forEach((name, i) => {
