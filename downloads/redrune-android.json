@@ -1,6 +1,6 @@
 {
-  "versionCode": 43,
-  "versionName": "43",
-  "notes": "Matches PC revision 28: Discord activity on PC (the app has no Discord).",
+  "versionCode": 44,
+  "versionName": "44",
+  "notes": "Matches PC revision 29: tool belt shows your real pickaxe and hatchet.",
   "apk": "https://laidbackcrew.org/downloads/RedRune.apk"
 }
