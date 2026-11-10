@@ -1,4 +1,8 @@
 {
-  "revision": 28,
-  "notes": "Discord shows what you are doing: fighting, training, where you are (towns, dungeons, TzHaar, Fight Caves and Jad), At home, and Chilling in the lobby."
+  "revision": 29,
+  "notes": "Tool belt shows your real pickaxe and hatchet. The client can now update itself: click Update now.",
+  "sha256Exe": "27be3e5a43544698bc558618609231de1a87dd177fe79c12e6ca63b254588d92",
+  "sizeExe": 5577050,
+  "sha256Jar": "c03fc383443e09da94bc9a6885135661fab7c97f1fdf3e36aef421f69fd217ce",
+  "sizeJar": 5369690
 }
